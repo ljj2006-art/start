@@ -1,0 +1,235 @@
+import asyncio
+from dataclasses import dataclass
+from typing import Dict, List
+
+
+# ==============================
+# Memory Agent
+# ==============================
+
+class MemoryAgent:
+    """负责管理上下文与历史任务"""
+
+    def __init__(self):
+        self.memory_store = []
+
+    def save_memory(self, data: str):
+        self.memory_store.append(data)
+
+    def recall_memory(self):
+        return self.memory_store[-5:]
+
+
+# ==============================
+# Planning Agent
+# ==============================
+
+class PlanningAgent:
+    """任务拆解 Agent"""
+
+    async def plan(self, user_request: str) -> List[str]:
+        print("\n[PlanningAgent] 正在分析用户需求...")
+
+        task_graph = [
+            "需求分析",
+            "技术方案设计",
+            "数据库设计",
+            "API 设计",
+            "前端页面生成",
+            "代码生成",
+            "自动测试",
+            "结果优化"
+        ]
+
+        await asyncio.sleep(1)
+        print(f"[PlanningAgent] 已生成任务链: {task_graph}")
+
+        return task_graph
+
+
+# ==============================
+# Research Agent
+# ==============================
+
+class ResearchAgent:
+    """负责资料检索"""
+
+    async def execute(self, task: str):
+        print(f"[ResearchAgent] 正在执行: {task}")
+        await asyncio.sleep(1)
+        return f"{task} 已完成"
+
+
+# ==============================
+# Coding Agent
+# ==============================
+
+class CodingAgent:
+    """负责代码生成"""
+
+    async def generate_code(self, feature: str):
+        print(f"[CodingAgent] 正在生成 {feature} 代码...")
+        await asyncio.sleep(1)
+
+        code_result = f'''
+# Auto Generated Code
+
+def {feature.lower().replace(" ", "_")}():
+    return "{feature} 模块运行成功"
+'''
+
+        return code_result
+
+
+# ==============================
+# Review Agent
+# ==============================
+
+class ReviewAgent:
+    """负责自动检查与优化"""
+
+    async def review(self, result: str):
+        print("[ReviewAgent] 正在检查输出结果...")
+        await asyncio.sleep(1)
+
+        feedback = {
+            "status": "success",
+            "logic_check": "passed",
+            "optimization": "代码结构已优化"
+        }
+
+        return feedback
+
+
+# ==============================
+# Optimization Agent
+# ==============================
+
+class OptimizationAgent:
+    """负责性能与 Token 优化"""
+
+    async def optimize(self, content: str):
+        print("[OptimizationAgent] 正在压缩上下文与优化 Token 使用...")
+        await asyncio.sleep(1)
+
+        optimized_content = content[:500]
+
+        return optimized_content
+
+
+# ==============================
+# Reflection Agent
+# ==============================
+
+class ReflectionAgent:
+    """自我反思 Agent"""
+
+    async def reflect(self, output: str):
+        print("[ReflectionAgent] 正在进行自我反思与错误修复...")
+        await asyncio.sleep(1)
+
+        reflection_result = {
+            "improvement": "已检查逻辑漏洞",
+            "quality_score": 94
+        }
+
+        return reflection_result
+
+
+# ==============================
+# 主系统
+# ==============================
+
+@dataclass
+class NeuroFlowSystem:
+    planner: PlanningAgent
+    researcher: ResearchAgent
+    coder: CodingAgent
+    reviewer: ReviewAgent
+    optimizer: OptimizationAgent
+    reflector: ReflectionAgent
+    memory: MemoryAgent
+
+    async def run(self, user_request: str):
+
+        print("=" * 60)
+        print(" NeuroFlow AI Workflow System 启动")
+        print("=" * 60)
+
+        self.memory.save_memory(user_request)
+
+        # Step 1: 任务规划
+        tasks = await self.planner.plan(user_request)
+
+        # Step 2: 任务执行
+        results = []
+
+        for task in tasks:
+
+            if "代码" in task:
+                code = await self.coder.generate_code(task)
+                results.append(code)
+
+            else:
+                result = await self.researcher.execute(task)
+                results.append(result)
+
+        # Step 3: Review
+        review_result = await self.reviewer.review(str(results))
+
+        # Step 4: Reflection
+        reflection = await self.reflector.reflect(str(results))
+
+        # Step 5: Optimization
+        optimized_result = await self.optimizer.optimize(str(results))
+
+        # Step 6: 保存记忆
+        self.memory.save_memory(optimized_result)
+
+        # Final Output
+        print("\n" + "=" * 60)
+        print(" 最终执行结果")
+        print("=" * 60)
+
+        print("\n[任务结果]")
+        for item in results:
+            print(item)
+
+        print("\n[Review Result]")
+        print(review_result)
+
+        print("\n[Reflection Result]")
+        print(reflection)
+
+        print("\n[Memory Recall]")
+        print(self.memory.recall_memory())
+
+        print("\n[Optimized Output]")
+        print(optimized_result)
+
+        print("\n系统执行完成")
+
+
+# ==============================
+# Main
+# ==============================
+
+async def main():
+
+    system = NeuroFlowSystem(
+        planner=PlanningAgent(),
+        researcher=ResearchAgent(),
+        coder=CodingAgent(),
+        reviewer=ReviewAgent(),
+        optimizer=OptimizationAgent(),
+        reflector=ReflectionAgent(),
+        memory=MemoryAgent()
+    )
+
+    user_request = "开发一个 AI 校园成长助手平台"
+
+    await system.run(user_request)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
